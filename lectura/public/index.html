@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mi rincón de lectura</title>
+  <link rel="stylesheet" href="/estilos.css?v=contenido-centrado">
+  <script type="module" src="/app.js?v=obligatorios"></script>
+</head>
+<body>
+  <header>
+    <h1>Mi rincón de lectura</h1>
+    <p>Tu colección de mangas, manhwas, fanfics y novelas.</p>
+  </header>
+  <main>
+    <section class="panel">
+      <h2 id="form-titulo">Agregar obra</h2>
+      <p class="nota-obligatorios">Los campos con <span class="marca-obligatorio">*</span> son obligatorios.</p>
+      <form id="obra">
+        <label class="ancho"><span>Título <span class="marca-obligatorio" aria-hidden="true">*</span></span><input name="titulo" required maxlength="150"></label>
+        <label class="ancho">Autor <input name="autor" maxlength="120"></label>
+        <details class="ancho selector-generos">
+          <summary>Géneros <span id="cantidad-generos"></span></summary>
+          <div id="opciones-generos" role="group" aria-label="Selecciona uno o varios géneros"></div>
+        </details>
+        <div id="selector-tipo" class="ancho"></div>
+        <div id="selector-estado" class="ancho"></div>
+        <fieldset id="detalles-tipo" class="ancho">
+          <legend>Detalles de la obra</legend>
+          <div id="campos-tipo"></div>
+        </fieldset>
+        <div class="progreso-formulario ancho">
+          <label><span>Capítulos leídos <span class="marca-obligatorio" aria-hidden="true">*</span></span><input name="capitulosLeidos" type="number" min="0" value="0" aria-describedby="error-capitulos" required></label>
+          <label>Total de capítulos <input name="totalCapitulos" type="number" min="1"></label>
+          <label id="cantidad-obra" hidden>
+            <span></span>
+            <input type="number" min="1" max="9007199254740991" disabled>
+          </label>
+        </div>
+        <p id="error-capitulos" class="error-progreso ancho" aria-live="polite" hidden></p>
+        <details class="ancho selector-generos" id="enlace-y-notas">
+          <summary>Enlace y notas</summary>
+          <div class="campos-adicionales">
+            <label>Enlace <input name="enlace" type="url" maxlength="2048" placeholder="https://…"></label>
+            <label>Notas <textarea name="notas" rows="3" maxlength="500"></textarea></label>
+          </div>
+        </details>
+        <fieldset class="ancho puntuacion">
+          <legend>Puntuación</legend>
+          <div class="estrellas-selector">
+            <label><input type="radio" name="puntuacion" value="1" aria-label="1 estrella"><span aria-hidden="true">★</span></label>
+            <label><input type="radio" name="puntuacion" value="2" aria-label="2 estrellas"><span aria-hidden="true">★</span></label>
+            <label><input type="radio" name="puntuacion" value="3" aria-label="3 estrellas"><span aria-hidden="true">★</span></label>
+            <label><input type="radio" name="puntuacion" value="4" aria-label="4 estrellas"><span aria-hidden="true">★</span></label>
+            <label><input type="radio" name="puntuacion" value="5" aria-label="5 estrellas"><span aria-hidden="true">★</span></label>
+          </div>
+          <label class="sin-puntuar"><input type="radio" name="puntuacion" value="" checked> Sin puntuar</label>
+        </fieldset>
+        <div class="acciones ancho">
+          <button type="submit">Guardar obra</button>
+          <button type="button" id="cancelar" hidden>Cancelar</button>
+        </div>
+      </form>
+    </section>
+    <section>
+      <h2 id="coleccion-titulo" tabindex="-1">Mi colección</h2>
+      <div class="filtros" role="group" aria-label="Filtrar obras por estado">
+        <button type="button" data-estado="" aria-pressed="true">Todas</button>
+        <button type="button" data-estado="Pendiente" aria-pressed="false">Pendientes</button>
+        <button type="button" data-estado="Leyendo" aria-pressed="false">Leyendo</button>
+        <button type="button" data-estado="Completada" aria-pressed="false">Completadas</button>
+        <button type="button" data-estado="Abandonada" aria-pressed="false">Abandonadas</button>
+      </div>
+      <p id="obras-visibles" role="status"></p>
+      <p id="mensaje" role="status"></p>
+      <div id="coleccion"></div>
+    </section>
+  </main>
+  <dialog id="confirmar-eliminacion" aria-labelledby="eliminacion-titulo" aria-describedby="eliminacion-descripcion">
+    <h2 id="eliminacion-titulo">¿Eliminar esta obra?</h2>
+    <p id="eliminacion-descripcion">Se quitará <strong id="obra-a-eliminar"></strong> de tu colección.</p>
+    <form method="dialog" class="acciones">
+      <button value="cancelar" autofocus>Cancelar</button>
+      <button value="eliminar" class="confirmar-eliminar">Sí, eliminar</button>
+    </form>
+  </dialog>
+  <template id="ficha">
+    <article class="panel tarjeta-obra">
+      <div class="cabecera-obra"><span class="tipo"></span><span class="estado-obra"></span></div>
+      <div class="titulo-obra">
+        <h3></h3>
+        <p class="valoracion"></p>
+      </div>
+      <ul class="generos" aria-label="Géneros"></ul>
+      <p class="autor-obra" hidden></p>
+      <dl class="detalle-obra" hidden></dl>
+      <p class="notas-obra" hidden></p>
+      <a class="enlace-obra" target="_blank" rel="noopener noreferrer" hidden>Abrir enlace de lectura</a>
+      <p class="progreso"></p>
+      <div class="acciones">
+        <button type="button" class="editar boton-icono" aria-label="Editar" title="Editar">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="m14 6 4 4M4 20l4.5-1 11-11a2.8 2.8 0 0 0-4-4l-11 11L4 20Z"/>
+          </svg>
+        </button>
+        <button type="button" class="eliminar boton-icono" aria-label="Eliminar" title="Eliminar">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v5m4-5v5"/>
+          </svg>
+        </button>
+      </div>
+    </article>
+  </template>
+</body>
+</html>
